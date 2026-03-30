@@ -32,13 +32,27 @@ jobs:
 
       - name: Copy contents of github-skills branch
         run: |
-          git fetch origin github-skills
-          # We use a subshell check to prevent errors if no folders match
-          if ls -d [!.]*/ >/dev/null 2>&1; then
-            git checkout origin/github-skills -- [!.]*/
+          git fetch origin github-skills:github-skills
+
+          # 2. Create a temporary directory to hold the skills files
+          mkdir temp_skills
+
+          # 3. Use 'git archive' to "export" the folders from that branch 
+          # and extract them into our temp folder. This avoids index errors.
+          git archive github-skills | tar -x -C temp_skills
+
+          # 4. Move the contents into the root directory
+          # This will overwrite any existing folders with the same name
+          if ls -d temp_skills/[!.]*/ >/dev/null 2>&1; then
+            cp -r temp_skills/[!.]*/ .
+            echo "Successfully moved non-hidden directories from github-skills."
           else
-            echo "No non-hidden directories found in github-skills branch."
+            echo "No non-hidden directories found to copy."
           fi
+          
+          # 5. Clean up the temp folder
+          rm -rf temp_skills
+          echo "Successfully copied directories from github-skills branch."
 
       - name: Commit and push changes
         run: |
