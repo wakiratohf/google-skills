@@ -2,6 +2,9 @@ name: Update Skills
 
 on:
   workflow_dispatch:
+  # Schedule is disabled for now
+  # schedule:
+  #   - cron: '0 * * * *' # Runs at minute 0 of every hour
 
 permissions:
   contents: write
@@ -10,32 +13,37 @@ jobs:
   update-skills:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main-tests
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: main-tests
+          ref: main
 
-      - name: Delete every directory that doesn't start with a dot
+      - name: Delete existing non-hidden directories
         run: |
+          # Cleans up existing folders so we don't have stale files
           find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec rm -rf {} +
 
-      - name: Download dac_skills.zip
-        run: curl -O https://dl.google.com/dac/dac_skills.zip
-
-      - name: Extract zip file
+      - name: Download and Extract dac_skills
         run: |
-          unzip dac_skills.zip
+          curl -L -O https://dl.google.com/dac/dac_skills.zip
+          unzip -o dac_skills.zip
           rm dac_skills.zip
 
-      - name: Copy contents of github-only branch
+      - name: Copy contents of github-skills branch
         run: |
-          git fetch origin github-only
-          git checkout origin/github-only -- .
+          git fetch origin github-skills
+          # We use a subshell check to prevent errors if no folders match
+          if ls -d [!.]*/ >/dev/null 2>&1; then
+            git checkout origin/github-skills -- [!.]*/
+          else
+            echo "No non-hidden directories found in github-skills branch."
+          fi
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          # The '|| true' ensures the workflow doesn't fail if there's nothing new
           git commit -m "Updates skills ($(date +'%Y-%m-%d %H:%M'))" || echo "No changes to commit"
-          git push origin HEAD:main-tests
+          git push origin HEAD:main
