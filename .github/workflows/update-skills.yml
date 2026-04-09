@@ -27,8 +27,13 @@ jobs:
       - name: Download and Extract dac_skills
         run: |
           curl -L -O https://dl.google.com/dac/dac_skills.zip
-          unzip -o dac_skills.zip
-          rm dac_skills.zip
+          mkdir temp_extract
+          unzip -o dac_skills.zip -d temp_extract
+          # Only copy directories from the root of the zip, ignoring files in the root
+          if ls -d temp_extract/[!.]*/ >/dev/null 2>&1; then
+            cp -r temp_extract/[!.]*/ .
+          fi
+          rm -rf temp_extract dac_skills.zip
 
       - name: Copy contents of github-skills branch
         run: |
