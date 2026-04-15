@@ -8,8 +8,68 @@ Android skills follow the [open-standard agent skills](https://agentskills.io/ho
 files (SKILL.md) that provide a technical specification of a task, and ground LLMs with information
 on specialized domains and workflows.
 
-To use Android skills, check
-your agent's documentation.
+## Installation
+
+The installer scripts copy skills to `~/.claude/skills/` for use with Claude Code. Each script
+supports two modes:
+
+- **Interactive mode** — presents a menu to choose which skills to install
+- **Install all** — installs every available skill without prompting
+
+### macOS / Linux (Bash)
+
+```bash
+# Interactive mode
+./install.sh
+
+# Install all skills
+./install.sh --all
+```
+
+### Windows (PowerShell)
+
+```powershell
+# Interactive mode
+./install.ps1
+
+# Install all skills
+./install.ps1 -All
+```
+
+### Windows (cmd)
+
+```cmd
+REM Interactive mode
+install.bat
+
+REM Install all skills
+install.bat --all
+```
+
+### Interactive menu
+
+When running in interactive mode, the installer displays a numbered list of available skills:
+
+| # | Skill | Description |
+|---|-------|-------------|
+| 1 | agp-9-upgrade | Upgrade Android Gradle Plugin to version 9 |
+| 2 | migrate-xml-views-to-jetpack-compose | Migrate XML views to Jetpack Compose |
+| 3 | navigation-3 | Migrate to Navigation 3 |
+| 4 | r8-analyzer | Analyze R8/ProGuard rules for optimization |
+| 5 | play-billing-library-version-upgrade | Upgrade Play Billing Library version |
+| 6 | edge-to-edge | Migrate to edge-to-edge display |
+
+You can enter:
+- Individual numbers separated by spaces (e.g. `1 3 5`)
+- Ranges (e.g. `1-3 5`)
+- `a` to install all
+- `q` to quit
+
+Already-installed skills are marked with `[*]` in the menu.
+
+## Usage
+
+To use Android skills after installation, check your agent's documentation.
 
 ## Disclaimer
 
